@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Riego Mokara</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Agregar el script del SDK de Firebase desde CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"
+      type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js"
+      type="module"></script>
+  </head>
+  <body>
+    <h1>Control de Riego</h1>
+
+    <div>
+      <p>Temperatura: <span id="plantTemperature"></span></p>
+      <p>Humedad: <span id="plantHumidity"></span></p>
+      <p>Estado: <span id="plantStatus"></span></p>
+    </div>
+
+    <form id="irrigation_schedule">
+      <label for="irrigationDate">Fecha de Riego:</label>
+      <input type="date" id="irrigationDate" required>
+      <label for="irrigationTime">Hora de Riego:</label>
+      <input type="time" id="irrigationTime" required>
+      <button type="submit">Agendar Riego</button>
+    </form>
+
+    <h2>Historial de Riegos Programados</h2>
+    <ul id="historic_records"></ul>
+
+    <script type="module">
+    // Configuración de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+    import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8Tol5jT4jNW6hF3UXQ6GLmgALvyLOXlA",
+      authDomain: "mokara-27.firebaseapp.com",
+      projectId: "mokara-27",
+      storageBucket: "mokara-27.firebasestorage.app",
+      messagingSenderId: "485132268141",
+      appId: "1:485132268141:web:376444960dbf2051a40564",
+      measurementId: "G-L3MH7DMVDX"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Generar datos correlacionados para temperatura y humedad
+    function generateData() {
+      const temperature = Math.floor(Math.random() * (35 - 15 + 1)) + 15;
+
+      let humidity;
+      if (temperature >= 30) {
+        humidity = Math.floor(Math.random() * (50 - 30 + 1)) + 30; // Baja humedad
+      } else if (temperature >= 20 && temperature < 30) {
+        humidity = Math.floor(Math.random() * (70 - 40 + 1)) + 40; // Moderada humedad
+      } else {
+        humidity = Math.floor(Math.random() * (100 - 60 + 1)) + 60; // Alta humedad
+      }
+
+      return { temperature, humidity };
+    }
+
+    // Clasificar los valores generados
+    function classifyData(temperature, humidity) {
+      const temperatureStatus =
+        temperature < 20
+          ? "Deficiente"
+          : temperature <= 25
+          ? "Ideal"
+          : temperature <= 30
+          ? "Saludable"
+          : "Excesivo";
+
+      const humidityStatus =
+        humidity < 40
+          ? "Deficiente"
+          : humidity <= 60
+          ? "Ideal"
+          : humidity <= 80
+          ? "Saludable"
+          : "Excesivo";
+
+      const plantStatus =
+        temperatureStatus === "Saludable" && humidityStatus === "Saludable"
+          ? "Saludable"
+          : "Revisar condiciones";
+
+      return { temperatureStatus, humidityStatus, plantStatus };
+    }
+
+    // Actualizar datos en el DOM
+    function updatePlantData() {
+      const { temperature, humidity } = generateData();
+      const { plantStatus } = classifyData(temperature, humidity);
+
+      document.getElementById("plantTemperature").textContent = `${temperature}°C`;
+      document.getElementById("plantHumidity").textContent = `${humidity}%`;
+      document.getElementById("plantStatus").textContent = plantStatus;
+
+      console.log(
+        `Temperatura: ${temperature}°C, Humedad: ${humidity}%, Estado: ${plantStatus}`
+      );
+    }
+
+    // Llamar a la función cada 5 segundos
+    setInterval(updatePlantData, 5000);
+
+    // Función para registrar el riego programado
+    document
+      .getElementById("irrigation_schedule")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const irrigationDate = document.getElementById("irrigationDate").value;
+        const irrigationTime = document.getElementById("irrigationTime").value;
+
+        if (!irrigationDate || !irrigationTime) {
+          alert("Por favor seleccione la fecha y hora.");
+          return;
+        }
+
+        const irrigationRef = ref(database, "irrigation_schedule");
+        push(irrigationRef, { irrigationDate, irrigationTime })
+          .then(() => alert("Regado agendado."))
+          .catch((error) =>
+            console.error("Error al guardar la programación de riego:", error)
+          );
+      });
+
+   // Obtener datos históricos al cargar la página
+window.onload = () => {
+  const historicRef = ref(database, 'historic_records');
+  get(historicRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+          const childData = childSnapshot.val();
+          const listItem = document.createElement("li");
+          listItem.textContent = `Fecha: ${childData.irrigation.date}, Hora: ${childData.irrigation.time}, Temp: ${childData.temperature}°C, Humedad: ${childData.humidity}%`;
+          document.getElementById("historic_records").appendChild(listItem);
+        });
+      } else {
+        console.log("No hay datos históricos.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error al obtener los datos históricos:", error);
+    });
+};
+
+  </script>
+  </body>
+</html>

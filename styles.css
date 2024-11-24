@@ -1,0 +1,104 @@
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #EDEAF7; /* Fondo violeta claro */
+  color: #2A2A2A; /* Texto principal */
+}
+
+/* Títulos */
+h1, h2 {
+  color: #4B0082; /* Violeta profundo */
+  text-align: center;
+}
+
+/* Divs principales */
+div {
+  padding: 20px;
+  margin: 20px auto;
+  border: 2px solid #7D7AA6; /* Borde violeta medio */
+  border-radius: 8px;
+  background-color: #F0F5EE; /* Fondo verde muy claro */
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Formularios */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+label {
+  font-weight: bold;
+  color: #5B2E6C; /* Violeta cálido */
+  margin-bottom: 8px;
+}
+
+input[type="date"],
+input[type="time"] {
+  padding: 8px;
+  border: 1px solid #7D7AA6; /* Borde violeta */
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  background-color: #F6F6FB; /* Fondo neutro */
+  color: #333;
+}
+
+/* Botones */
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50; /* Verde vivo */
+  color: #FFFFFF; /* Texto blanco */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #388E3C; /* Verde más oscuro */
+}
+
+/* Lista del histórico */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #D1C4E9; /* Fondo violeta pastel */
+  border: 1px solid #9575CD; /* Borde violeta */
+  font-size: 14px;
+  color: #4A4A4A;
+}
+
+/* Enlaces */
+a {
+  color: #4B0082; /* Violeta profundo */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  div {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
